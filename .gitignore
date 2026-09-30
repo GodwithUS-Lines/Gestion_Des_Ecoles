@@ -1,48 +1,42 @@
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
+*.pyo
+*.pyd
 
 # Virtual environment
 venv/
+.venv/
 env/
-ENV/
 
 # Django
-*.log
-local_settings.py
 db.sqlite3
 db.sqlite3-journal
 media/
 staticfiles/
 
-# Environment files
+# Environment / secrets
 .env
 .env.local
 .env.*.local
 
 # IDE
-.idea/
 .vscode/
-*.swp
-*.swo
-*~
+.idea/
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Testing
+# Logs
+*.log
+
+# Coverage
 .coverage
 htmlcov/
 .pytest_cache/
-.tox/
 
-# Distribution / Packaging
-dist/
+# Build
 build/
+dist/
 *.egg-info/
-
-# Misc
-*.pot
-*.pyc
