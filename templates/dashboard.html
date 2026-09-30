@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableau de bord - Gestion des Écoles ASITECH{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold text-gray-900">Tableau de bord</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-sm text-gray-600">Connecté en tant que <strong>{{ user.get_full_name|default:user.username }}</strong></span>
+                    <a href="{% url 'accounts:logout' %}" class="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                        Déconnexion
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Welcome Banner -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl text-white p-6 mb-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold">Bienvenue, {{ user.get_full_name|default:user.username }} !</h2>
+                    <p class="mt-1 text-blue-100">Voici un aperçu de votre établissement.</p>
+                </div>
+                <div class="mt-4 md:mt-0">
+                    <a href="{% url 'admin:index' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-700 bg-white rounded-lg hover:bg-gray-100 transition-colors">
+                        Accéder à l'administration
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {% for stat in stats %}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 rounded-lg flex items-center justify-center {{ stat.bg_class }}">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            {{ stat.icon|safe }}
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">{{ stat.label }}</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ stat.value }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+            <div class="px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-900">Actions rapides</h3>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {% for action in quick_actions %}
+                    <a href="{{ action.url }}" class="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors">
+                        <div class="w-10 h-10 {{ action.bg_class }} rounded-lg flex items-center justify-center mb-3">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                {{ action.icon|safe }}
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 text-center">{{ action.label }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity (placeholder) -->
+        <div class="mt-8 bg-white rounded-xl shadow-sm border border-gray-100">
+            <div class="px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-900">Activité récente</h3>
+            </div>
+            <div class="p-6">
+                <div class="text-center py-8 text-gray-500">
+                    <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p>Aucune activité récente pour le moment.</p>
+                    <p class="text-sm mt-1">Les données apparaîtront une fois les modules métier configurés.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
