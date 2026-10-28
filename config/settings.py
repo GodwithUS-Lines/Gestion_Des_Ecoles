@@ -56,9 +56,7 @@ INSTALLED_APPS = [
     'apps.payments',
     'apps.reports',
     'apps.notifications',
-    "notes",
-    "absences",
-    "bulletins",
+
     
 ]
 
