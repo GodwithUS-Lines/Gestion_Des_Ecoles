@@ -22,5 +22,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('accounts/', include('apps.accounts.urls')),
+    path('students/', include('apps.students.urls')),
+    path('enrollments/', include('apps.enrollments.urls')),
     path('admin/', admin.site.urls),
 ]

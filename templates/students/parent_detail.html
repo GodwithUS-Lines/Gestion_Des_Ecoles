@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{{ parent }} - {% trans "Détail parent" %} - Gestion des Écoles ASITECH{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{% url 'students:parent_list' %}" class="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                        ← {% trans "Retour à la liste" %}
+                    </a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="{% url 'students:parent_update' parent.pk %}" class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                        {% trans "Modifier" %}
+                    </a>
+                    {% if parent.is_active %}
+                    <a href="{% url 'students:parent_deactivate' parent.pk %}" class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+                        {% trans "Désactiver" %}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-3xl mx-auto">
+            <!-- Informations principales -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+                <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+                    <div class="flex-shrink-0">
+                        {% if parent.user.photo %}
+                        <img src="{{ parent.user.photo.url }}" alt="Photo" class="w-24 h-24 rounded-full object-cover border-4 border-blue-100">
+                        {% else %}
+                        <div class="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold">
+                            {{ parent.user.first_name|first|upper }}{{ parent.user.last_name|first|upper }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="flex-1 text-center md:text-left mt-4 md:mt-0">
+                        <h2 class="text-2xl font-bold text-gray-900">{{ parent.user.get_full_name|default:parent.user.username }}</h2>
+                        <p class="text-gray-600 mt-1">{{ parent.user.email }}</p>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                            {% if parent.is_active %} bg-green-100 text-green-700
+                            {% else %} bg-red-100 text-red-700 {% endif %}">
+                            {% if parent.is_active %}{% trans "Actif" %}{% else %}{% trans "Inactif" %}{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Informations -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">{% trans "Informations" %}</h3>
+                    <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <dt class="text-gray-500">{% trans "Profession" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ parent.profession|default:"—" }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">{% trans "Revenu mensuel" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ parent.revenu_mensuel|default:"—"|floatformat:0 }} FCFA</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">{% trans "Date de création" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ parent.date_creation|date:"d/m/Y à H:i" }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">{% trans "Dernière modification" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ parent.date_modification|date:"d/m/Y à H:i" }}</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <!-- Enfants -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">{% trans "Enfants scolarisés" %} ({{ parent.enfants.count }})</h3>
+                    </div>
+                    {% if parent.enfants.all %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Nom" %}</th>
+                                    <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Matricule" %}</th>
+                                    <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Sexe" %}</th>
+                                    <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Lieu de naissance" %}</th>
+                                    <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Statut" %}</th>
+                                    <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Actions" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for child in parent.enfants.all %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ child.user.get_full_name|default:child.user.username }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{{ child.matricule }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ child.get_sexe_display }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ child.lieu_naissance }}</td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        {% if child.is_active %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">{% trans "Actif" %}</span>
+                                        {% else %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">{% trans "Inactif" %}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                        <a href="{% url 'students:student_detail' child.pk %}" class="text-blue-600 hover:text-blue-900 mr-3">{% trans "Voir" %}</a>
+                                        <a href="{% url 'students:student_update' child.pk %}" class="text-blue-600 hover:text-blue-900">{% trans "Modifier" %}</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-8 text-gray-500">
+                        <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <p>{% trans "Aucun enfant scolarisé pour ce parent." %}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

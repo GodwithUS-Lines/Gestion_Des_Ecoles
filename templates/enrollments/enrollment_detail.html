@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{{ enrollment }} - {% trans "Détail inscription" %} - Gestion des Écoles ASITECH{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{% url 'enrollments:enrollment_list' %}" class="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                        ← {% trans "Retour à la liste" %}
+                    </a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="{% url 'enrollments:enrollment_update' enrollment.pk %}" class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                        {% trans "Modifier" %}
+                    </a>
+                    {% if enrollment.statut == 'ACTIVE' %}
+                    <a href="{% url 'enrollments:enrollment_cancel' enrollment.pk %}" class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+                        {% trans "Annuler" %}
+                    </a>
+                    <a href="{% url 'enrollments:enrollment_terminate' enrollment.pk %}" class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                        {% trans "Terminer" %}
+                    </a>
+                    <a href="{% url 'enrollments:enrollment_suspend' enrollment.pk %}" class="px-4 py-2 text-sm font-medium text-yellow-600 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors">
+                        {% trans "Suspendre" %}
+                    </a>
+                    {% elif enrollment.statut == 'SUSPENDUE' %}
+                    <a href="{% url 'enrollments:enrollment_reactivate' enrollment.pk %}" class="px-4 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                        {% trans "Réactiver" %}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Informations principales -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+                <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+                    <div class="flex-shrink-0">
+                        {% if enrollment.student.user.photo %}
+                        <img src="{{ enrollment.student.user.photo.url }}" alt="Photo" class="w-24 h-24 rounded-full object-cover border-4 border-blue-100">
+                        {% else %}
+                        <div class="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold">
+                            {{ enrollment.student.user.first_name|first|upper }}{{ enrollment.student.user.last_name|first|upper }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="flex-1 text-center md:text-left mt-4 md:mt-0">
+                        <h2 class="text-2xl font-bold text-gray-900">{{ enrollment.student.user.get_full_name|default:enrollment.student.user.username }}</h2>
+                        <p class="text-gray-600 mt-1">{{ enrollment.student.matricule }}</p>
+                        <div class="flex flex-wrap gap-2 mt-3">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                {% if enrollment.statut == 'ACTIVE' %} bg-green-100 text-green-700
+                                {% elif enrollment.statut == 'SUSPENDUE' %} bg-yellow-100 text-yellow-700
+                                {% elif enrollment.statut == 'TERMINEE' %} bg-blue-100 text-blue-700
+                                {% elif enrollment.statut == 'ANNULEE' %} bg-red-100 text-red-700
+                                {% else %} bg-gray-100 text-gray-700 {% endif %}">
+                                {{ enrollment.get_statut_display }}
+                            </span>
+                            {% if enrollment.is_reinscription %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
+                                {% trans "Réinscription" %}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Informations inscription -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">{% trans "Informations de l'inscription" %}</h3>
+                    <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <dt class="text-gray-500">{% trans "Numéro d'inscription" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ enrollment.numero_inscription }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">{% trans "Année scolaire" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ enrollment.academic_year.nom }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">{% trans "Classe" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ enrollment.classroom.nom }} ({{ enrollment.classroom.get_niveau_display }})</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">{% trans "Série" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ enrollment.classroom.serie|default:"—" }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">{% trans "Statut" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ enrollment.get_statut_display }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">{% trans "Réinscription" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ enrollment.is_reinscription|yesno:"Oui,Non" }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">{% trans "Date d'inscription" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ enrollment.date_inscription|date:"d/m/Y" }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">{% trans "Actif" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ enrollment.is_active|yesno:"Oui,Non" }}</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <!-- Informations élève -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">{% trans "Informations élève" %}</h3>
+                    <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <dt class="text-gray-500">{% trans "Nom complet" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ enrollment.student.user.get_full_name|default:enrollment.student.user.username }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">{% trans "Matricule" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ enrollment.student.matricule }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">{% trans "Sexe" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ enrollment.student.get_sexe_display }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">{% trans "Lieu de naissance" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ enrollment.student.lieu_naissance }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">{% trans "Établissement" %}</dt>
+                            <dd class="font-medium text-gray-900">{{ enrollment.student.school.nom }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-500">{% trans "Parent / Tuteur" %}</dt>
+                            <dd class="font-medium text-gray-900">
+                                {% if enrollment.student.parent %}
+                                    {{ enrollment.student.parent.user.get_full_name|default:enrollment.student.parent.user.username }}
+                                {% else %}
+                                    <span class="text-gray-400">—</span>
+                                {% endif %}
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mt-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">{% trans "Actions disponibles" %}</h3>
+                <div class="flex flex-wrap gap-4">
+                    <a href="{% url 'enrollments:enrollment_update' enrollment.pk %}" class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                        {% trans "Modifier" %}
+                    </a>
+                    {% if enrollment.statut == 'ACTIVE' %}
+                    <a href="{% url 'enrollments:enrollment_cancel' enrollment.pk %}" class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+                        {% trans "Annuler" %}
+                    </a>
+                    <a href="{% url 'enrollments:enrollment_terminate' enrollment.pk %}" class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                        {% trans "Terminer" %}
+                    </a>
+                    <a href="{% url 'enrollments:enrollment_suspend' enrollment.pk %}" class="px-4 py-2 text-sm font-medium text-yellow-600 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors">
+                        {% trans "Suspendre" %}
+                    </a>
+                    {% elif enrollment.statut == 'SUSPENDUE' %}
+                    <a href="{% url 'enrollments:enrollment_reactivate' enrollment.pk %}" class="px-4 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                        {% trans "Réactiver" %}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Informations système -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mt-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">{% trans "Informations système" %}</h3>
+                <dl class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <dt class="text-gray-500">{% trans "Date de création" %}</dt>
+                        <dd class="font-medium text-gray-900">{{ enrollment.date_creation|date:"d/m/Y à H:i" }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-gray-500">{% trans "Dernière modification" %}</dt>
+                        <dd class="font-medium text-gray-900">{{ enrollment.date_modification|date:"d/m/Y à H:i" }}</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
