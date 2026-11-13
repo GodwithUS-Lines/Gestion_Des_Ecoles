@@ -1,6 +1,6 @@
 from django.shortcuts import render
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-
 
 def home(request):
     """Page d'accueil publique"""
@@ -102,7 +102,33 @@ def dashboard(request):
             'icon': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>',
             'bg_class': 'bg-purple-500'
         },
+        
     ]
+
+        # Actions du module Notes / Absences / Bulletins (réservées au personnel)
+    if request.user.is_superuser or request.user.role in ('ADMIN', 'DIRECTOR', 'TEACHER'):
+        quick_actions += [
+            {
+                'label': 'Notes',
+                'url': reverse('grades:list'),
+                'icon': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>',
+                'bg_class': 'bg-indigo-500'
+            },
+            {
+                'label': 'Absences',
+                'url': reverse('attendance:list'),
+                'icon': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>',
+                'bg_class': 'bg-orange-500'
+            },
+            {
+                'label': 'Bulletins',
+                'url': reverse('reports:list'),
+                'icon': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>',
+                'bg_class': 'bg-teal-500'
+            },
+        ]
+
+
     return render(request, 'dashboard.html', {
         'user': request.user,
         'stats': stats,
