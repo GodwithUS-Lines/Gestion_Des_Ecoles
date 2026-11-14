@@ -30,7 +30,7 @@ class Teacher(models.Model):
     employee_number = models.CharField("Matricule",max_length=30,blank=True)
     hire_date = models.DateField("Date d'embauche",null=True,blank=True)
     is_active = models.BooleanField("Actif",default=True)
-
+    
     class Meta:
         verbose_name = "Enseignant"
         verbose_name_plural = "Enseignants"
@@ -38,8 +38,4 @@ class Teacher(models.Model):
 
     def __str__(self):
         return self.user.get_full_name() or str(self.user)
-
-
-
-
-
+      
