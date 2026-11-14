@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Liste des inscriptions" %} - Gestion des Écoles ASITECH{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold text-gray-900">{% trans "Gestion des inscriptions" %}</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="{% url 'enrollments:enrollment_create' %}" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                        {% trans "Nouvelle inscription" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Recherche et filtres -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+            <form method="get" class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-1">
+                    <label for="id_q" class="sr-only">{% trans "Recherche" %}</label>
+                    {{ search_form.q }}
+                </div>
+                <div>
+                    <label for="id_academic_year" class="sr-only">{% trans "Année scolaire" %}</label>
+                    {{ search_form.academic_year }}
+                </div>
+                <div>
+                    <label for="id_classroom" class="sr-only">{% trans "Classe" %}</label>
+                    {{ search_form.classroom }}
+                </div>
+                <div>
+                    <label for="id_statut" class="sr-only">{% trans "Statut" %}</label>
+                    {{ search_form.statut }}
+                </div>
+                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                    {% trans "Filtrer" %}
+                </button>
+                <a href="{% url 'enrollments:enrollment_list' %}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                    {% trans "Réinitialiser" %}
+                </a>
+            </form>
+        </div>
+
+        <!-- Tableau des inscriptions -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            {% if enrollments %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Numéro" %}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Élève" %}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Classe" %}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Année" %}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Statut" %}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Réinscription" %}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Date" %}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{% trans "Actions" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for enrollment in enrollments %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ enrollment.numero_inscription }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ enrollment.student.user.get_full_name|default:enrollment.student.user.username }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ enrollment.classroom.nom }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ enrollment.academic_year.nom }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    {% if enrollment.statut == 'ACTIVE' %} bg-green-100 text-green-800
+                                    {% elif enrollment.statut == 'SUSPENDUE' %} bg-yellow-100 text-yellow-800
+                                    {% elif enrollment.statut == 'TERMINEE' %} bg-blue-100 text-blue-800
+                                    {% elif enrollment.statut == 'ANNULEE' %} bg-red-100 text-red-800
+                                    {% else %} bg-gray-100 text-gray-800 {% endif %}">
+                                {{ enrollment.get_statut_display }}
+                            </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if enrollment.is_reinscription %}
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{% trans "Oui" %}</span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">{% trans "Non" %}</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ enrollment.date_inscription|date:"d/m/Y" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a href="{% url 'enrollments:enrollment_detail' enrollment.pk %}" class="text-blue-600 hover:text-blue-900 mr-3">{% trans "Voir" %}</a>
+                                <a href="{% url 'enrollments:enrollment_update' enrollment.pk %}" class="text-blue-600 hover:text-blue-900 mr-3">{% trans "Modifier" %}</a>
+                                {% if enrollment.statut == 'ACTIVE' %}
+                                <a href="{% url 'enrollments:enrollment_cancel' enrollment.pk %}" class="text-red-600 hover:text-red-900 mr-3">{% trans "Annuler" %}</a>
+                                <a href="{% url 'enrollments:enrollment_terminate' enrollment.pk %}" class="text-blue-600 hover:text-blue-900 mr-3">{% trans "Terminer" %}</a>
+                                <a href="{% url 'enrollments:enrollment_suspend' enrollment.pk %}" class="text-yellow-600 hover:text-yellow-900 mr-3">{% trans "Suspendre" %}</a>
+                                {% elif enrollment.statut == 'SUSPENDUE' %}
+                                <a href="{% url 'enrollments:enrollment_reactivate' enrollment.pk %}" class="text-green-600 hover:text-green-900 mr-3">{% trans "Réactiver" %}</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <div class="px-6 py-4 border-t border-gray-200">
+                <nav class="flex items-center justify-between">
+                    <div class="text-sm text-gray-700">
+                        {% trans "Page" %} {{ page_obj.number }} {% trans "sur" %} {{ paginator.num_pages }}
+                    </div>
+                    <div class="flex gap-2">
+                        {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.academic_year %}&academic_year={{ request.GET.academic_year }}{% endif %}{% if request.GET.classroom %}&classroom={{ request.GET.classroom }}{% endif %}{% if request.GET.statut %}&statut={{ request.GET.statut }}{% endif %}" class="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                            {% trans "Précédent" %}
+                        </a>
+                        {% endif %}
+                        {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.academic_year %}&academic_year={{ request.GET.academic_year }}{% endif %}{% if request.GET.classroom %}&classroom={{ request.GET.classroom }}{% endif %}{% if request.GET.statut %}&statut={{ request.GET.statut }}{% endif %}" class="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                            {% trans "Suivant" %}
+                        </a>
+                        {% endif %}
+                    </div>
+                </nav>
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="text-center py-12">
+                <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">{% trans "Aucune inscription trouvée" %}</h3>
+                <p class="text-gray-500 mb-4">{% trans "Commencez par créer une nouvelle inscription." %}</p>
+                <a href="{% url 'enrollments:enrollment_create' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                    {% trans "Créer une inscription" %}
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}
