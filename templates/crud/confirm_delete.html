@@ -1,0 +1,12 @@
+{% extends "module_base.html" %}
+{% block module_content %}
+<div class="max-w-xl bg-white rounded-xl shadow p-6">
+    <h1 class="text-xl font-bold mb-2">Confirmer la suppression</h1>
+    <p class="text-gray-600 mb-4">Voulez-vous vraiment supprimer : <strong>{{ object }}</strong> ?</p>
+    <form method="post" class="flex gap-3">
+        {% csrf_token %}
+        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Supprimer</button>
+        <a href="{{ cancel_url }}" class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">Annuler</a>
+    </form>
+</div>
+{% endblock %}

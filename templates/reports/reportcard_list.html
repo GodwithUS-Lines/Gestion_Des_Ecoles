@@ -1,0 +1,47 @@
+{% extends "module_base.html" %}
+{% block module_content %}
+<div class="bg-white rounded-xl shadow p-6 mb-6">
+    <h2 class="font-bold mb-3">Générer les bulletins</h2>
+    <form method="post" action="{% url 'reports:generate' %}" class="flex gap-3">
+        {% csrf_token %}
+        <select name="period" required class="rounded-lg border border-gray-300 px-3 py-2">
+            <option value="">Choisir la période</option>
+            {% for p in periods %}<option value="{{ p.id }}">{{ p }}</option>{% endfor %}
+        </select>
+        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Générer</button>
+    </form>
+</div>
+<div class="bg-white rounded-xl shadow p-6">
+    <div class="flex items-center justify-between mb-4">
+        <h1 class="text-xl font-bold">Bulletins</h1>
+        <form method="get">
+            <select name="period" onchange="this.form.submit()" class="rounded-lg border border-gray-300 px-3 py-2">
+                <option value="">Toutes les périodes</option>
+                {% for p in periods %}
+                <option value="{{ p.id }}" {% if selected_period == p.id|stringformat:"s" %}selected{% endif %}>{{ p }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+    <table class="w-full text-sm text-left">
+        <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+            <tr><th class="px-3 py-2">Rang</th><th class="px-3 py-2">Élève</th><th class="px-3 py-2">Période</th>
+                <th class="px-3 py-2">Moyenne</th><th class="px-3 py-2">Absences</th><th class="px-3 py-2"></th></tr>
+        </thead>
+        <tbody>
+            {% for c in object_list %}
+            <tr class="border-t">
+                <td class="px-3 py-2">{{ c.rank|default:"-" }}</td>
+                <td class="px-3 py-2">{{ c.student }}</td>
+                <td class="px-3 py-2">{{ c.period.name }}</td>
+                <td class="px-3 py-2 font-semibold">{{ c.overall_average|default:"-" }}</td>
+                <td class="px-3 py-2">{{ c.absences_count }}</td>
+                <td class="px-3 py-2 text-right"><a href="{% url 'reports:detail' c.pk %}" class="text-blue-600 hover:underline">Voir</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="px-3 py-6 text-center text-gray-500">Aucun bulletin. Génère-les avec le formulaire ci-dessus.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

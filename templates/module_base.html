@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title|default:"Gestion des écoles" }}{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto p-6">
+    <nav class="flex flex-wrap items-center gap-2 mb-6 bg-white rounded-xl shadow p-3 text-sm font-medium">
+        <a href="{% url 'dashboard' %}" class="px-3 py-2 rounded-lg hover:bg-gray-100">← Tableau de bord</a>
+        <a href="{% url 'grades:list' %}" class="px-3 py-2 rounded-lg hover:bg-gray-100">Notes</a>
+        <a href="{% url 'attendance:list' %}" class="px-3 py-2 rounded-lg hover:bg-gray-100">Absences</a>
+        <a href="{% url 'reports:list' %}" class="px-3 py-2 rounded-lg hover:bg-gray-100">Bulletins</a>
+    </nav>
+    {% block module_content %}{% endblock %}
+</div>
+{% endblock %}

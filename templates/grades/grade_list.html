@@ -1,0 +1,57 @@
+{% extends "module_base.html" %}
+{% block module_content %}
+<div class="bg-white rounded-xl shadow p-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h1 class="text-xl font-bold">Notes</h1>
+        <div class="flex gap-3">
+            <form method="get">
+                <select name="period" onchange="this.form.submit()" class="rounded-lg border border-gray-300 px-3 py-2">
+                    <option value="">Toutes les périodes</option>
+                    {% for p in periods %}
+                    <option value="{{ p.id }}" {% if selected_period == p.id|stringformat:"s" %}selected{% endif %}>{{ p }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+            <a href="{% url 'grades:create' %}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">+ Ajouter</a>
+        </div>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+                <tr>
+                    <th class="px-3 py-2">Élève</th><th class="px-3 py-2">Matière</th>
+                    <th class="px-3 py-2">Période</th><th class="px-3 py-2">Type</th>
+                    <th class="px-3 py-2">Note</th><th class="px-3 py-2">Coef.</th>
+                    <th class="px-3 py-2">Date</th><th class="px-3 py-2"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for g in object_list %}
+                <tr class="border-t">
+                    <td class="px-3 py-2">{{ g.student }}</td>
+                    <td class="px-3 py-2">{{ g.subject }}</td>
+                    <td class="px-3 py-2">{{ g.period.name }}</td>
+                    <td class="px-3 py-2">{{ g.get_evaluation_type_display }}</td>
+                    <td class="px-3 py-2 font-semibold">{{ g.value }}/20</td>
+                    <td class="px-3 py-2">{{ g.coefficient }}</td>
+                    <td class="px-3 py-2">{{ g.date|date:"d/m/Y" }}</td>
+                    <td class="px-3 py-2 text-right whitespace-nowrap">
+                        <a href="{% url 'grades:update' g.pk %}" class="text-blue-600 hover:underline">Modifier</a>
+                        <a href="{% url 'grades:delete' g.pk %}" class="text-red-600 hover:underline ml-3">Supprimer</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="px-3 py-6 text-center text-gray-500">Aucune note.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if is_paginated %}
+    <div class="flex justify-between mt-4 text-sm">
+        {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&period={{ selected_period }}" class="text-blue-600">← Précédent</a>{% else %}<span></span>{% endif %}
+        <span>Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&period={{ selected_period }}" class="text-blue-600">Suivant →</a>{% else %}<span></span>{% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
