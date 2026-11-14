@@ -18,6 +18,31 @@
             }
         }
     </script>
+
+    <style>
+        /* Styles globaux pour les champs de formulaire : inputs, selects, textareas */
+        input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+        textarea,
+        select {
+            width: 100%;
+            max-width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.75rem;
+            background-color: #f9fafb;
+            color: #1f2937;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+    </style>
+
     {% block extra_head %}{% endblock %}
 </head>
 <body class="font-sans antialiased bg-gray-50">
@@ -35,6 +60,12 @@
 
     {% block content %}
     {% endblock %}
+
+    <footer class="bg-white border-t border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <p class="text-center text-sm text-gray-500">Gestion des Écoles ASITECH v1.0</p>
+        </div>
+    </footer>
 
     {% block extra_scripts %}{% endblock %}
 </body>

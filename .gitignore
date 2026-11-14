@@ -31,6 +31,11 @@ Thumbs.db
 # Logs
 *.log
 
+# Fichiers temporaires et sensibles (local uniquement)
+cookies.txt
+response.html
+test-output.txt
+
 # Coverage
 .coverage
 htmlcov/
