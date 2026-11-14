@@ -1,1 +1,42 @@
- p
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Build
+build/
+dist/
+*.egg-info/
