@@ -21,5 +21,5 @@ class Meta:
     ordering = ["school","name"]
     unique_together = ("school","code")
 
-    def __str__(self):
-        return f"{self.name}({self.code})"
+def __str__(self):
+   return f"{self.name}({self.code})"

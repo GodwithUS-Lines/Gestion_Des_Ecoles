@@ -20,5 +20,6 @@ class SchoolClass(models.Model):
         ordering = ["school","name"]
         unique_together = ("school","name","academic_year")
 
- def __str__(self)
-  return f"{self.name} ({self.academic_year})"
+    def __str__(self):
+     return f"{self.name} ({self.academic_year})"
+
